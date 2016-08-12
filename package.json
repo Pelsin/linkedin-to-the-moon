@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "Search through linkedin profiles",
   "scripts": {
-    "search": "casperjs main.js"
+    "search": "./node_modules/casperjs/bin/casperjs main.js"
   },
   "author": "Ian Vidales",
   "license": "ISC",

@@ -1,4 +1,5 @@
 var casper = require("casper").create();
+var instance = require("casper").create();
 
 casper.start("http://linkedin.com/", function (response) {
   this.echo(
@@ -12,8 +13,8 @@ casper.waitForSelector("form.login-form", function () {
   this.echo("Inserting credentials");
 
   this.fillSelectors("form.login-form", {
-    "#login-email": "",
-    "#login-password": ""
+    "#login-email": casper.cli.args[0],
+    "#login-password": casper.cli.args[1]
   }, true);
 });
 
@@ -35,6 +36,32 @@ casper.then(function () {
   this.fillSelectors("form#global-search", {
     "#main-search-box": "it recruiter stockholm"
   }, true);
+});
+
+casper.waitForSelector('#results-col', function () {
+  this.capture('test.png');
+});
+
+function getLinks() {
+  var links = document.querySelectorAll('.main-headline');
+  return Array.prototype.map.call(links, function(e) {
+    return e.getAttribute('href');
+  });
+}
+
+var links = [];
+casper.then(function () {
+  links = this.evaluate(getLinks);
+});
+
+casper.then(function () {
+  casper.eachThen(links, function(response) {
+    this.capture('victims/person' + Math.random() + '.png');
+
+    this.thenOpen(response.data, function () {
+      console.log('Saving victim');
+    });
+  });
 });
 
 casper.run();
